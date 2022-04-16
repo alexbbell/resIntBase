@@ -1,7 +1,9 @@
-import React, {useState, useEffect  } from "react";
+import React, {Component, useState, useEffect  } from "react";
 import 'core-js/actual';
 import "regenerator-runtime/runtime";
 import axios from "axios";
+import {Modal, Button} from "react-bootstrap";
+import MyForm from "./myForm";
 
 //import  './litedbApi'
 
@@ -9,14 +11,11 @@ const Listing = () => {
 
      const host =   'https://localhost:7245/api/Premix/';
     //const host =   '/Data/localdata.json'
-    const [items, setItems] = useState({rows: []});
-    const [status, setStatus] = useState('')
     const [data, setData] = useState({ rows: [] });
-
+    const[show, setShow] = useState(0);
     useEffect(() => {
         const fetchData = async () => {
           const result = await axios( host);
-    
           setData(result.data);
         };
     
@@ -25,42 +24,63 @@ const Listing = () => {
     
     
 
-    // const showItems  = async(items) => {
-    //         return items
-    //         }
-    //showItems(items);
-//sendRequest();
 
-    // async function RenderListing(items) {
-    //     const result = Object.keys(await items).map(t => {
-    //         <div key={t.title}>{t.title}</div>
-    //     });
-    //      result;
-    // }
+    const handleShow = () => setShow(1);
+    const handleClose = () => setShow(0);
     return (
         <>
         <h1>Listing</h1>
-        {/* <div>{ RenderListing(items)}</div> */}
-        <div><a href="addnew">Add New record</a></div>
+        <span>show: {show}</span>
+        <div>
+            <Button onClick={handleShow} 
+                type="button" data-target="#exampleModal" className="btn btn-success" data-toggle="modal" >Add New record</Button>
+        </div>
+        
+        
+        
         <div className="row">
             <div className="col-6 offset-1">
-        <table className="table table-striped">
+                    <table className="table table-striped">
+                        <thead>
+                            <tr>
+                                <td>Title</td>
+                                <td>Action</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                {data.rows.map(item => (
+                    <tr key={item.id}><td>
+                    <a href={item.id}>{item.title}</a>
+                    <br />
+                    <span>Вид: {item.vid}</span></td>
+                    <td>
+                    <a href="">edit</a></td>
 
-      {data.rows.map(item => (
-          <tr><td>
-          <a href={item.id}>{item.title}</a>
-          <br />
-          <span>Вид: {item.vid}</span></td>
-          <td>
-          <a href="">edit</a></td>
-
-        </tr>
-      ))}
-      </table>
-      </div>
+                    </tr>
+                ))}
+                </tbody>
+                </table>
     </div>
+    </div>
+
+            <Modal  show={show}>
+                <Modal.Dialog>
+                    <Modal.Header closeButton onClick={handleClose} >
+                        <Modal.Title>Modal title</Modal.Title>
+                    </Modal.Header>
+
+                    <Modal.Body>
+                        <MyForm data />
+                    </Modal.Body>
+
+                    <Modal.Footer>
+                        <Button onClick={handleClose} variant="secondary">Close</Button>
+                        <Button variant="primary">Save changes</Button>
+                    </Modal.Footer>
+                </Modal.Dialog>
+            </Modal>
         </>
     )
 }
 
-export default Listing;
+export default Listing
