@@ -1,29 +1,31 @@
 import React, {Component, useState, useTransition, Suspense } from "react";
-// //import {Form, Button, FormGroup, FormControl, ControlLabel} from 'react-bootstrap';
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
-import  Container  from "react-bootstrap/Container";
-import  Row  from "react-bootstrap/Row";
-import  Col  from "react-bootstrap/Col";
-import { fetchDevelopers, fetchVitamins}  from './fakeApi'
+import {Form, Button, Container, Row, Col} from 'react-bootstrap';
+
+import { fetchDevelopers, fetchVitamins, getPremixById}  from './fakeApi'
+import { useForm } from "react-hook-form";
+
 
 
 function App( {name, callback}) {
-   let add = (x, y) => x + y;
-   var att = [1, 2,4,5, 6]
-   console.log(...att)
-
+ 
    const initialResource = {
       firstName: 'Aleksei',
-      lastNmae:  'Beliaev'
+      lastName:  'Beliaev'
+      // ,
+      , premixData: getPremixById()
    }
+   
    const[resource, setResource] = useState(initialResource);
    const[isPending, startTransition] = useTransition();
    const[firstName, setName] = useState('Alek');
    
+   const [premixData, setPremixData ] = useState( initialResource.premixData);
+   
+   const { register, handleSubmit } = useForm();
+    
+
    return (
       <div ref={callback}>
-
 
 
 {/* title: 'FI-2', vid: 'Комплекс с инулином', sostav: 'A, D3, B6, инулин', age : 'ДРВ', developer: 'Terezia', buyer: '', dstill: '2021' */}
@@ -32,11 +34,16 @@ function App( {name, callback}) {
     <Col></Col>
     <Col lg={10} >
 <Form>
-<h1>Hello {name}! !</h1>
+<h1>Hello {firstName}! {premixData.title} !</h1>
 
   <Form.Group className="mb-3" controlId="formTitle">
     <Form.Label>Название</Form.Label>
-    <Form.Control type="text" placeholder="Enter title" />
+    <Form.Control type="text" placeholder="Enter title" value={resource.premixData.title}  
+    onChange={ (e) => {
+       resource.premixData.title  = e.target.value;
+       console.log(e.target.value) 
+    }
+    } />
     <Form.Text className="text-muted"></Form.Text>
   </Form.Group>
 
@@ -72,7 +79,6 @@ function App( {name, callback}) {
          <button 
             onClick={ () => {
                 console.log('test');
-
             }}
          >Next</button>
          <div>{firstName}</div>
@@ -102,7 +108,6 @@ function CtrlDevelopers() {
 
 function CtrlVitamins() {
    const vits = fetchVitamins();
-   console.log(vits);
    const vitsCtrl = vits.map((opts) => {
       return (
          <Form.Check inline type="checkbox" label={opts.title} key={opts.title} />
@@ -116,8 +121,8 @@ function CtrlVitamins() {
 }
 
  function Content ( {resource}) {
-    console.log('res: ',resource);
     const dat = resource.firstName;
+
     return (
        <div>{dat}</div>
     )

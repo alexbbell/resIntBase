@@ -1,0 +1,34 @@
+{
+  "rows": [
+    {
+      "id": 10,
+      "title": "Тараканы",
+      "vid": "у каждого свои"
+    },
+    {
+      "id": 4,
+      "title": "string",
+      "vid": "string"
+    },
+    {
+      "id": 2,
+      "title": "Test 2",
+      "vid": "Очень странный"
+    },
+    {
+      "id": 3,
+      "title": "Test 33",
+      "vid": "Очень странный"
+    },
+    {
+      "id": 1,
+      "title": "Test premix",
+      "vid": "Странный тип"
+    },
+    {
+      "id": 5,
+      "title": "You imported it as Router",
+      "vid": "so you should call it as <Router> as well."
+    }
+  ]
+}

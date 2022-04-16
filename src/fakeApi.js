@@ -30,11 +30,39 @@ const  vitamins = [
 
 ]
 
+
+async function f() {
+    return new Promise(resolve => {
+        setTimeout(() => {
+            resolve(
+                premixData[0]
+            )
+        }, 1000)
+    })
+}
+
+
+export function getPremixById() {
+    let result = premixData[0];
+    return result;
+}
+
 export function fetchDevelopers() {
     return developers;
 }
 
-export function fetchVitamins() {
-    
+export function fetchVitamins() {    
     return vitamins;
 }
+
+// async function Test() {
+//     let vitamin = vitamins[0];
+//     vitamin.title = "AAAAA";
+//     return vitamin;
+// }
+
+// export function  asTest() {
+//     let t =  await  Test() 
+
+//     return t;
+// } 
