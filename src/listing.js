@@ -18,7 +18,6 @@ const Listing = () => {
           const result = await axios( host);
           setData(result.data);
         };
-    
         fetchData();
       }, []);
     
@@ -26,20 +25,28 @@ const Listing = () => {
 
 
     const handleShow = () => setShow(1);
-    const handleClose = () => setShow(0);
+    const handleClose = () => {
+        choosePremix();
+        setShow(0);
+    }
+    const [selectedPremix, choosePremix] = useState(); 
+    const editRow = (item) => {
+        choosePremix(item);
+        return item;
+    }
     return (
         <>
         <h1>Listing</h1>
         <span>show: {show}</span>
         <div>
-            <Button onClick={handleShow} 
+            <Button onClick={handleShow } 
                 type="button" data-target="#exampleModal" className="btn btn-success" data-toggle="modal" >Add New record</Button>
         </div>
         
         
         
-        <div className="row">
-            <div className="col-6 offset-1">
+        <div key="1" className="row">
+            <div className="col-6 ">
                     <table className="table table-striped">
                         <thead>
                             <tr>
@@ -48,37 +55,46 @@ const Listing = () => {
                             </tr>
                         </thead>
                         <tbody>
-                {data.rows.map(item => (
-                    <tr key={item.id}><td>
-                    <a href={item.id}>{item.title}</a>
-                    <br />
-                    <span>Вид: {item.vid}</span></td>
+                {data.rows.map(premix => (
+                    <tr key={premix.id}>
+                    <td>{premix.id}</td>
                     <td>
-                    <a href="">edit</a></td>
+                    <a href={premix.id}>{premix.title}</a>
+                    <br />
+                    <span>Вид: {premix.vid}</span></td>
+                    <td>
+                    <div onClick={ () => {
+                        handleShow();
+                        editRow(premix);
+                    } }>edit</div></td>
 
                     </tr>
                 ))}
                 </tbody>
                 </table>
-    </div>
-    </div>
+            </div>
 
-            <Modal  show={show}>
-                <Modal.Dialog>
-                    <Modal.Header closeButton onClick={handleClose} >
-                        <Modal.Title>Modal title</Modal.Title>
-                    </Modal.Header>
+            <div className="col-6 ">
 
-                    <Modal.Body>
-                        <MyForm data />
-                    </Modal.Body>
+                    <Modal  show={show}>
+                        <Modal.Dialog>
+                            <Modal.Header closeButton onClick={handleClose} >
+                                <Modal.Title>Modal title</Modal.Title>
+                            </Modal.Header>
 
-                    <Modal.Footer>
-                        <Button onClick={handleClose} variant="secondary">Close</Button>
-                        <Button variant="primary">Save changes</Button>
-                    </Modal.Footer>
-                </Modal.Dialog>
-            </Modal>
+                            <Modal.Body>
+                                <MyForm premix={selectedPremix} />
+                            </Modal.Body>
+
+                            <Modal.Footer>
+                                <Button onClick={ handleClose } variant="secondary">Close</Button>
+                                <Button variant="primary">Save changes</Button>
+                            </Modal.Footer>
+                        </Modal.Dialog>
+                    </Modal>
+                </div>
+            </div>
+
         </>
     )
 }

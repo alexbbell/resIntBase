@@ -1,2 +1,8 @@
 body {
   font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif; }
+
+.checkboxfloat {
+  flex-direction: column;
+  width: 60px;
+  float: left;
+  text-align: center; }

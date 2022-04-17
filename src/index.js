@@ -29,13 +29,17 @@ root.render (
           paddingBottom: "1rem",
         }}
       >
-        <Link to="/listing">Listing</Link> | 
 
-        <Link to="/">Invoices</Link> |{" "}
+          <Link to="/listing">Listing</Link> | 
+          <Link to="/">Invoices</Link> |{" "}
+
+ 
+
 
       </nav>
       <Routes>
       <Route path="/" element={<Listing />} />
+
       <Route path="/listing" element={<MyForm />} />
 
       </Routes>
