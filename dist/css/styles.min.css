@@ -1,8 +1,10 @@
 body {
-  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif; }
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  color: "black"; }
 
 .checkboxfloat {
-  flex-direction: column;
+  flex-direction: row;
   width: 60px;
-  float: left;
-  text-align: center; }
+  height: 60px;
+  text-align: center;
+  border: #000 1px solid; }

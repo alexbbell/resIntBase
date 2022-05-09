@@ -1,6 +1,6 @@
 import React, {Component, useState, useTransition, Suspense, useEffect } from "react";
 
-import { fetchDevelopers, fetchVitamins}  from './fakeApi'
+import { fetchDevelopers, fetchVitamins}  from '../fakeApi'
 import { useForm } from "react-hook-form";
 import axios from "axios";
 
@@ -8,18 +8,16 @@ import axios from "axios";
 const host =   'https://localhost:7245/api/Premix/';
 
 const MyForm = (props) => {
-    const initialResource = {
-        firstName: 'Aleksei',
-        lastName:  'Beliaev'
-        // ,
-     }
 
 
     const defaultPremix = (props.premix) ? props.premix : {}
     const { register, handleSubmit, formState: { errors } } = useForm();
+
     const [premixData, setPremixData] = useState( defaultPremix);    
     const handleRegistration = (data) => console.log(data);
-    const [checkboxes, setCheckboxes] = useState([...new Array(4)].map(() => false) );
+    const vitamins = fetchVitamins();
+    //const [checkboxes, setCheckboxes] = useState([...new Array(vitamins.length)].map(() => false) );
+    const [checkboxes, setCheckboxes] = useState([...new Array(vitamins.length)].map(() => false) );
 
 
     //Getting info about selected premix 
@@ -29,51 +27,55 @@ const MyForm = (props) => {
         }
         const req  = host  + premixData.id;
         axios.get(req).then(response => {
-console.log('32line: ', response.data);
-            setPremixData(response.data);
-            if(response.data.vitamins) {
-                checkVitaminsonLoad(response.data.vitamins);
+        console.log('32line: ', response.data);
+        var js = response.data;
+
+            if(js.vitamins) {
+                js.vitamins = checkVitaminsonLoad(response.data.vitamins);
             }
+            
+            setPremixData(js);
+
         }).catch(err => {
             console.log('error: ', err);
         })
     }, [] )
 
-    const vitamins = fetchVitamins();
 
     const checkVitaminsonLoad = (inVit) => {
         var checkedItems = []
         vitamins.forEach( (vall, index) => {
             checkedItems[index] = false
             inVit.forEach(vs => {
-
                 if(vs.title === vall.title ) {
                     checkedItems[index] = true
                 }
             }) 
         });
-        
         setCheckboxes(checkedItems);
         console.log('checkedItems', checkedItems);
-
+        return checkedItems;
     } 
      //setCheckboxes(vitamins);
 
     const toggleChecked = (title, index) => {
             const checkboxData = [...checkboxes]
             checkboxData[index] = !checkboxData[index];
+
             setCheckboxes(checkboxData)
-            console.log('checkboxData', checkboxData);
+            premixData.vitamins = checkboxData;
+            setPremixData(premixData);
+//            console.log('checkboxData', checkboxData);
     }
      const checkboxesCtrl = 
         vitamins.map( (element, index) => 
-            <div className="checkboxfloat" key={index}>
-                <input type="checkbox" name="vitamin"
+            <div className="checkboxfloat" key={index}> 
+                <input type="checkbox" name="checkboxes{index}" {...register('checkboxes')} 
                     checked={checkboxes[index]}
                     onChange= { () => toggleChecked(element, index)}
-                    value={checkboxes[index]}
+                    value={element.titled}
                     ></input><br />
-                {element.title} {checkboxes[index]}
+                {element.title} 
                 
                 </div>
         );
@@ -82,7 +84,9 @@ console.log('32line: ', response.data);
     
     const registerOptions = {
         name: {required : "Name is required" },
-        kind: {required: 'Выберите вид'}
+        kind: {required: 'Выберите вид'},
+        checkboxes : {required: 'Выбрать'}
+
     }
 
 
@@ -129,7 +133,6 @@ console.log('32line: ', response.data);
                     </div>
                 <div className="col-lg-3 ">
                     {checkboxesCtrl}
-                    <input type="checkbox" name="sostav" ></input>
                     
                     <label>{errors?.kind && errors.kind.message}</label>
                 </div>
@@ -138,7 +141,7 @@ console.log('32line: ', response.data);
             <div className="row">
                 <div className="col-lg-3 offset-3">
 
-                <button className="btn btn-primary">Save</button>
+                <button onClick={handleSubmit(handleRegistration)} className="btn btn-primary">Save</button>
                 </div>
             </div>
                 {/* more input fields... */}

@@ -3,7 +3,7 @@ import 'core-js/actual';
 import "regenerator-runtime/runtime";
 import axios from "axios";
 import {Modal, Button} from "react-bootstrap";
-import MyForm from "./myForm";
+import MyForm from "./Components/MyForm";
 
 //import  './litedbApi'
 

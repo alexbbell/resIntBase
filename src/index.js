@@ -5,7 +5,7 @@ import { createRoot}  from 'react-dom/client';
 import {BrowserRouter , Routes, Route, Link, Switch } from "react-router-dom";
 import {Modal, Button} from "bootstrap";
 
-import MyForm from "./myForm";
+import MyForm from "./components/MyForm";
 import Listing from "./listing";
 import "./styles.scss";
 import PremixContextProvider from "./context/premixContext";
