@@ -1,3 +1,6 @@
+import React, {Component, useState, useTransition, Suspense, useEffect } from "react";
+
+
 const myArray = [
     { name: 'Alekesey', birthdate: '15.01.1980', position: 'Chief' },
     { name: 'Dina', birthdate: '10.03.1999', position: 'Manger' },
@@ -6,6 +9,10 @@ const myArray = [
     { name: 'Ian', birthdate: '11.12.1981', position: 'Styident' },
 ]
 
+const ages = [
+    {value: 'drv', label:  'ДРВ'} , 
+    {value: 'dish', label: 'ДиШ'},
+    {value: 'mass', label: 'Массовое потребление'}]
 
 const premixData = [
     { title: 'FI-2', vid: 'Комплекс с инулином', sostav: 'A, D3, B6, инулин', age : 'ДРВ', developer: 'Terezia', buyer: '', dstill: '2021'},
@@ -16,9 +23,9 @@ const premixData = [
     { title: 'VMP8-1', vid: 'Витаминно-минеральный', sostav: 'D3, йод', age : 'ДРВ', developer: 'Terezia', buyer: '', dstill: ''}
 ]	
 const developers = [
-    {id: 1, devtitle : 'Terezia'},
-    {id: 2, devtitle: 'Ресурс'}, 
-    {id: 3, devtitle: 'Cod Beck'}
+    {value: 'terezia', label : 'Terezia'},
+    {value: 'resurs', label: 'Ресурс'}, 
+    {value: 'codbeck',  label: 'Cod Beck'}
 ]
 const  vitamins = [
     { id: 1, title: 'A', rastvor: '' },
@@ -27,8 +34,14 @@ const  vitamins = [
     { id: 4, title: 'инулин', rastvor: '' },
     { id: 5, title: 'кальций', rastvor: '' },
     { id: 6, title: 'йод', rastvor: '' }   
-
 ]
+
+const kinds = [ 
+    { value: 'withInulin', label:  'Комплекс с инулином' },
+    { value: 'vitamin', label:  'Витаминно-минеральный'}
+]
+
+
 
 
 async function f() {
@@ -46,7 +59,13 @@ export function getPremixById() {
     let result = premixData[0];
     return result;
 }
+export function fetchKinds() {
+    return kinds;
+}
 
+export function fetchAges() {
+    return ages;
+}
 export function fetchDevelopers() {
     return developers;
 }
@@ -54,6 +73,9 @@ export function fetchDevelopers() {
 export function fetchVitamins() {    
     return vitamins;
 }
+
+
+
 
 // async function Test() {
 //     let vitamin = vitamins[0];

@@ -3,7 +3,8 @@ import 'core-js/actual';
 import "regenerator-runtime/runtime";
 import axios from "axios";
 import {Modal, Button} from "react-bootstrap";
-import MyForm from "./Components/MyForm";
+// import MyForm from "./Components/Myform";
+import PreForm from "./Components/PreForm";
 
 //import  './litedbApi'
 
@@ -83,7 +84,7 @@ const Listing = () => {
                             </Modal.Header>
 
                             <Modal.Body>
-                                <MyForm premix={selectedPremix} />
+                                <PreForm premix={selectedPremix} />
                             </Modal.Body>
 
                             <Modal.Footer>

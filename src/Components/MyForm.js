@@ -14,9 +14,7 @@ const MyForm = (props) => {
     const { register, handleSubmit, formState: { errors } } = useForm();
 
     const [premixData, setPremixData] = useState( defaultPremix);    
-    const handleRegistration = (data) => console.log(data);
     const vitamins = fetchVitamins();
-    //const [checkboxes, setCheckboxes] = useState([...new Array(vitamins.length)].map(() => false) );
     const [checkboxes, setCheckboxes] = useState([...new Array(vitamins.length)].map(() => false) );
 
 
@@ -29,12 +27,12 @@ const MyForm = (props) => {
         axios.get(req).then(response => {
         console.log('32line: ', response.data);
         var js = response.data;
+  
 
-            if(js.vitamins) {
-                js.vitamins = checkVitaminsonLoad(response.data.vitamins);
-            }
-            
-            setPremixData(js);
+            // if(js.vitamins) {
+            //     checkVitaminsonLoad(response.data.vitamins);
+            // }
+            setPremixData(js);        
 
         }).catch(err => {
             console.log('error: ', err);
@@ -42,42 +40,35 @@ const MyForm = (props) => {
     }, [] )
 
 
-    const checkVitaminsonLoad = (inVit) => {
-        var checkedItems = []
-        vitamins.forEach( (vall, index) => {
-            checkedItems[index] = false
-            inVit.forEach(vs => {
-                if(vs.title === vall.title ) {
-                    checkedItems[index] = true
-                }
-            }) 
-        });
-        setCheckboxes(checkedItems);
-        console.log('checkedItems', checkedItems);
-        return checkedItems;
-    } 
-     //setCheckboxes(vitamins);
 
-    const toggleChecked = (title, index) => {
+
+    const toggleChecked = (el, index) => {
             const checkboxData = [...checkboxes]
+            console.log(checkboxData[index]);
+       
+            //el.target.checked = !isChecked;
             checkboxData[index] = !checkboxData[index];
-
+            
             setCheckboxes(checkboxData)
             premixData.vitamins = checkboxData;
             setPremixData(premixData);
 //            console.log('checkboxData', checkboxData);
     }
      const checkboxesCtrl = 
-        vitamins.map( (element, index) => 
-            <div className="checkboxfloat" key={index}> 
-                <input type="checkbox" name="checkboxes{index}" {...register('checkboxes')} 
-                    checked={checkboxes[index]}
-                    onChange= { () => toggleChecked(element, index)}
-                    value={element.titled}
-                    ></input><br />
+        vitamins.map( (element, index) => {
+        const isChecked  = (premixData.vitamins.find(x=>x.id == element.id) ) ? true : false; 
+
+            return <div className="checkboxfloat" key={index}> 
+                <input type="checkbox" 
+                name="vitamins" {...register('vitamins')} 
+                checked={isChecked}
+                onChange= { () => toggleChecked(element, index)}
+                value={element.id}
+                ></input><br />
                 {element.title} 
                 
                 </div>
+                }
         );
 
 
@@ -88,6 +79,7 @@ const MyForm = (props) => {
         checkboxes : {required: 'Выбрать'}
 
     }
+    const handleRegistration = (data) => console.log(data);
 
 
     return (
