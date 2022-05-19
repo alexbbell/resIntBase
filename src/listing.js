@@ -37,7 +37,7 @@ const Listing = () => {
     }
     return (
         <>
-        <h1>Listing</h1>
+        <h1>Listing of premixes</h1>
         <span>show: {show}</span>
         <div>
             <Button onClick={handleShow } 
@@ -75,9 +75,9 @@ const Listing = () => {
                 </table>
             </div>
 
-            <div className="col-6 ">
+                <div className="col-6 ">
 
-                    <Modal  show={show}>
+                    <Modal show={show}>
                         <Modal.Dialog>
                             <Modal.Header closeButton onClick={handleClose} >
                                 <Modal.Title>Modal title</Modal.Title>
@@ -88,7 +88,7 @@ const Listing = () => {
                             </Modal.Body>
 
                             <Modal.Footer>
-                                <Button onClick={ handleClose } variant="secondary">Close</Button>
+                                <Button onClick={handleClose} variant="secondary">Close</Button>
                                 <Button variant="primary">Save changes</Button>
                             </Modal.Footer>
                         </Modal.Dialog>
