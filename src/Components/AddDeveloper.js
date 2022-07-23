@@ -7,7 +7,7 @@ const AddDeveloper = (props) => {
     const mainUrl = 'https://localhost:7245/api/Developers/';
     
     const [devname, setDevName ] = useState('');
-    const [devcode, setDevCode ] = useState('');
+    const [developerId, setDevCode ] = useState('');
     const [devcountry, setDevCountry ] = useState('');
     const [devId, setDevId] = useState(null);
     const [operationResult, setOperationResult] = useState(null);
@@ -15,7 +15,7 @@ const AddDeveloper = (props) => {
 
     if(props.developer) {
 
-        const host = mainUrl + props.developer.devcode;
+        const host = mainUrl + props.developer.developerId;
         console.log('props true', props);
         useEffect(() => {
             let mounted = true;
@@ -24,7 +24,7 @@ const AddDeveloper = (props) => {
                 if (mounted) {
                     const res = result.data;
                     setDevName(result.data.name);
-                    setDevCode(result.data.devcode);
+                    setDevCode(result.data.developerId);
                     setDevCountry(result.data.country);
                     setMode('edit');
 
@@ -47,7 +47,7 @@ const AddDeveloper = (props) => {
         event.preventDefault();
         const developer = {
             name : devname,
-            devcode : devcode,
+            developerId : developerId,
             country: devcountry
         }
         console.log(developer);
@@ -58,7 +58,7 @@ const AddDeveloper = (props) => {
             .catch( (err) => console.log('Error on adding' , err));
         }
         else {
-            const url = mainUrl + developer.devcode;
+            const url = mainUrl + developer.developerId;
             axios.put(url, developer)
                 .then(setOperationResult('Developer is updated'))
             .catch( (err) => console.log('Error on updating' , err));
@@ -79,12 +79,14 @@ const AddDeveloper = (props) => {
           <div>AddDeveloper</div>
           <Form onSubmit={submitData}>
               <FormGroup>
+
+              <Form.Label>Developer code</Form.Label>
+                <Form.Control id="developerId" readOnly  placeholder="Enter developer code" onChange={devCodeChanged} value={developerId}/>
+                <Form.Text>Без пробелов, латиница и цифры</Form.Text>
+                <br />
+
                 <Form.Label>Developer Name</Form.Label>
                 <Form.Control id="devName" placeholder="Enter developer name" onChange={devNameChanged} value={devname} />
-
-                <Form.Label>Developer code</Form.Label>
-                <Form.Control id="devCode" placeholder="Enter developer code" onChange={devCodeChanged} value={devcode}/>
-                <Form.Text>Без пробелов, латиница и цифры</Form.Text>
 
                 <Form.Label>Country</Form.Label>
                 <Form.Control id="devCountry" placeholder="Enter country name" onChange={devCountryChanged} value={devcountry} />

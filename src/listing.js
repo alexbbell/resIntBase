@@ -1,36 +1,53 @@
 import React, {Component, useState, useEffect  } from "react";
-import 'core-js/actual';
+//import 'core-js/actual';
 import "regenerator-runtime/runtime";
 import axios from "axios";
 import {Modal, Button} from "react-bootstrap";
 // import MyForm from "./Components/Myform";
-import PreForm from "./Components/PreForm";
+import Preform from "./Components/Preform";
+import useFetch from './context/useFetch';
+
 
 //import  './litedbApi'
 
 const Listing = () => {
 
-     const host =   'https://localhost:7245/api/Premix/';
-    //const host =   '/Data/localdata.json'
-    const [data, setData] = useState({ rows: [] });
+    const host =   'https://localhost:7245/api/Premixes/';
+    const [premixData, setPremixData] = useState( [] );
     const[show, setShow] = useState(0);
+    const [selectedPremix, choosePremix] = useState({}); 
+
     useEffect(() => {
         const fetchData = async () => {
-          const result = await axios( host);
-          setData(result.data);
+            const result = await axios(host);
+            let newArray = [];
+            result.data.forEach(element => {
+                newArray.push(
+                    {
+                        'id': element.premixId,
+                        'title': element.title,
+                        'vid': element.vid
+                    }
+                );
+            });
+            setPremixData(newArray);
         };
         fetchData();
-      }, []);
+    }, []);
     
     
 
 
     const handleShow = () => setShow(1);
     const handleClose = () => {
-        choosePremix();
+        choosePremix( {
+            'title' : '',
+            'vid': '',
+            'tu' : ''
+        });
         setShow(0);
     }
-    const [selectedPremix, choosePremix] = useState(); 
+
     const editRow = (item) => {
         choosePremix(item);
         return item;
@@ -56,7 +73,7 @@ const Listing = () => {
                             </tr>
                         </thead>
                         <tbody>
-                {data.rows.map(premix => (
+                {premixData.map(premix => (
                     <tr key={premix.id}>
                     <td>{premix.id}</td>
                     <td>
@@ -84,7 +101,7 @@ const Listing = () => {
                             </Modal.Header>
 
                             <Modal.Body>
-                                <PreForm premix={selectedPremix} />
+                                <Preform premix={selectedPremix} />
                             </Modal.Body>
 
                             <Modal.Footer>

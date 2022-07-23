@@ -5,8 +5,10 @@ import { createRoot}  from 'react-dom/client';
 import {BrowserRouter , Routes, Route, Link, Switch } from "react-router-dom";
 
 import MyForm from "./Components/Myform";
-import PreForm from "./Components/Preform";
+import Preform from "./Components/Preform";
 import Developers from "./Components/Developers";
+import Vitamins from "./Components/Vitamins";
+import AddVitamin from "./Components/AddVitamin";
 
 import Listing from "./listing";
 import "./styles.scss";
@@ -36,6 +38,8 @@ root.render (
         <Link to="/preform">PreForm</Link> | 
         <Link to="/developers">Developers</Link> | 
         <Link to="/adddeveloper">Add new developers</Link> | 
+        <Link to="/vitamins">Vitamins</Link> | 
+        <Link to="/addvitamin">Add new vitamin</Link> | 
 
           <Link to="/">Invoices</Link> |{" "}
 
@@ -45,8 +49,10 @@ root.render (
       </nav>
       <Routes>
       <Route path="/" element={<Listing />} />
-      <Route path="/preform" element={<PreForm />} />
+      <Route path="/preform" element={<Preform />} />
       <Route path="/listing" element={<MyForm />} />
+      <Route path="/vitamins" element={<Vitamins />} />
+      <Route path="/addvitamin" element={<AddVitamin />} /> 
       <Route path="/developers" element={<Developers />} />
       <Route path="/adddeveloper" element={<AddDeveloper />} />
 

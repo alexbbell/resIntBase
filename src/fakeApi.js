@@ -29,11 +29,13 @@ const developers = [
 ]
 const  vitamins = [
     { id: 1, title: 'A', rastvor: '' },
-    { id: 2, title: 'D3', rastvor: '' },
-    { id: 3, title: 'B6', rastvor: '' },
-    { id: 4, title: 'инулин', rastvor: '' },
-    { id: 5, title: 'кальций', rastvor: '' },
-    { id: 6, title: 'йод', rastvor: '' }   
+    { id: 2, title: 'B', rastvor: '' },
+    { id: 3, title: 'C', rastvor: '' },
+    { id: 4, title: 'D3', rastvor: '' },
+    { id: 5, title: 'B6', rastvor: '' },
+    { id: 6, title: 'инулин', rastvor: '' },
+    { id: 7, title: 'кальций', rastvor: '' },
+    { id: 8, title: 'йод', rastvor: '' }   
 ]
 
 const kinds = [ 

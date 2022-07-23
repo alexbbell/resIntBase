@@ -20,7 +20,6 @@ const Preform = (props) => {
     const [checkboxes, setCheckboxes] = useState([...new Array(vitamins.length)].map(() => false) );
 
     const [premixFormData, setPremixFormData] = useState( {});
-    const [vitaminsSelected, setVitaminData] = useState( []);
     const [mode, setMode] = useState('new'); // mode. value == 'new' - new form, value == 'edit' - edit existing record
 
 console.log('props: ', props);
@@ -28,7 +27,12 @@ console.log('props: ', props);
 if(props.premix) {
     //Getting info about selected premix 
     useEffect(() => {
- 
+        // if (typeof (premixSourceData.id) === 'undefined') {
+        //     premixSourceData.id = 19;
+        // }
+        // else {
+        //     premixSourceData.id = 19;
+        // }
         const req = host + props.premix.id;
     
         let mounted = true;
@@ -37,9 +41,9 @@ if(props.premix) {
             if (mounted) {
                 var js = result.data;
                 console.log('js', js);
-                setPremixFormData({ 'title': js.title, 'vid': js.vid, 'tu' : js.tu, 'vitamins': js.vitamins });
-                fillVitamins(js.vitamins);
-                //checkboxesRenderCtrl(fillVitamins(js.vitamins))
+                setPremixFormData({ 'title': js.title, 'vid': js.vid, 'tu' : js.tu, 'checks': fillVitamins(js.vitamins) });
+//                setPremixFormData({ 'title': js.title, 'kind': js.vid, 'tu' : js.tu });
+             //   checkboxesRenderCtrl(fillVitamins(js.vitamins))
                 setMode('edit');
             }
         };
@@ -52,8 +56,8 @@ if(props.premix) {
 }
     const fillVitamins = (vits) => {
         let vitaminsInProduct = [];
-        vitamins.map( (element) => {
-            const isChecked  = (vits.find(x=>x == element.title) ) ? true : false; 
+        vitamins.map( (element, index) => {
+            const isChecked  = (vits.find(x=>x.id == element.id) ) ? true : false; 
             const newVit = {
                 'id': element.id,
                 'title': element.title,
@@ -61,44 +65,45 @@ if(props.premix) {
             }
             vitaminsInProduct.push(newVit);
         });
-
-        setVitaminData(vitaminsInProduct);
         return vitaminsInProduct;
     }
 
     
     const toggleChecked = (el, index) => {
 
-        vitaminsSelected.filter(x=>x.title === el.title).forEach(element => {
+        //checkboxData[index] = !checkboxData[index];
+        console.log('el:', el.id)
+        premixFormData.checks.filter(x=>x.id === el.id).forEach(element => {
             element.isChecked = !element.isChecked;
         });
-        setVitaminData(vitaminsSelected);
-
+        setPremixFormData(premixFormData)
+        console.log(premixFormData.checks);
     } 
 
-
-    const RenderVitaminBlock = () => {
-        console.log('vitaminsSelected', vitaminsSelected);
-        return(
-            <div>
-            {vitaminsSelected.map((element, index) => {
-                let isChecked = element.isChecked;
-                return (
-                    <div key={index}>
-                        <input type="checkbox" 
-                        name="vitamins" {...register('vitamins')} 
-                        defaultChecked={element.isChecked}
-                        value={element.title}
-                        onChange={() => toggleChecked(element, index)}
-
-                        /><br />{element.title} {element.isChecked}</div>
-                    )
-            })
-        }
-            </div>
-        )
-            
+    const checkboxesRenderCtrl = (vits) => {
+        const result = vitamins.map((element, index) => {
+            //const isChecked  = (premixSourceData.vitamins.find(x=>x.id == element.id) ) ? true : false; 
         
+        let isResult  = vits.filter(x=>x.id === element.id && x.isChecked === true);
+        let isChecked = (isResult.length > 0) ? true : false;
+        //  ? true : false; 
+
+
+            return (
+                <div className="checkboxfloat" key={index}>
+                    {/* <span>{checks[0].id}</span> */}
+                    <input type="checkbox"
+                        name="vitamins" {...register('vitamins')}
+                         defaultChecked={isChecked}
+                        onChange={() => toggleChecked(element, index)}
+                        value={element.id}
+                    ></input><br /> 
+                    {element.title}
+
+                </div>
+            )
+        });
+        return result;
     }
 
 
@@ -113,7 +118,7 @@ if(props.premix) {
             console.log(error.response)
         });
     }
-    //const checkboxesCtrl = checkboxesRenderCtrl(premixFormData);
+    const checkboxesCtrl = checkboxesRenderCtrl(premixFormData);
     console.log('premixFormData', premixFormData);
     const registerOptions = {
         name: {required : "Name is required" },
@@ -238,8 +243,6 @@ if(props.premix) {
                     <label htmlFor="kind">Состав</label>
                     </div>
                 <div className="col-lg-3 ">
-                     { RenderVitaminBlock() } 
-
                      {/* {checkboxesRenderCtrl(premixFormData.checks)}  */}
                     <label>{errors?.kind && errors.kind.message}</label>
                 </div>

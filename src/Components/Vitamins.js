@@ -1,18 +1,18 @@
 import React,  {Component, useState, useEffect} from 'react'
 import {Modal, Button} from "react-bootstrap";
 import axios from "axios";
-import AddDeveloper from './AddDeveloper';
+import AddVitamin   from './AddVitamin';
 
 
-const Developers = (props) => {
+const Vitamins = (props) => {
 
 
-    const host =   'https://localhost:7245/api/Developers/';
+    const host =   'https://localhost:7245/api/Vitamins/';
     //const host =   '/Data/localdata.json'
-    const [developersData, setDevelopersData] = useState([]);
+    const [vitaminsData, setVitaminsData] = useState([]);
     const[showEdit, setShowEdit] = useState(0);
     const[showRemove, setShowRemove] = useState(0);
-    const [selectedDeveloper, selectDeveloper] = useState({});
+    const [selectedVitamin, selectVitamin] = useState({});
     const [operationResult, setOperationResult] = useState(null);
 
 
@@ -21,7 +21,7 @@ const Developers = (props) => {
         const fetchData = async () => {
           const result = await axios( host);
           if (mounted) {
-            setDevelopersData(result.data);
+            setVitaminsData(result.data);
           }
         }
         fetchData();
@@ -37,37 +37,34 @@ const Developers = (props) => {
       const handleShow = () => setShowEdit(1);
       //Close  modal
       const handleClose = () => {
-//          choosePremix();
           setShowEdit(0);
           setShowRemove(0);
-          selectDeveloper({});
+          selectVitamin({});
       }
 
       const editRow = (developer) => {
-        console.log(developer)
-
-        selectDeveloper(developer);
+        selectVitamin(developer);
         handleShow();
       }
 
       const confirmRemoveRow = (developer) => {
-        selectDeveloper(developer);
+        selectVitamin(developer);
         setShowRemove(1);
       }
 
-      const RemoveRow = (developer) => {
-          console.log('RemoveRow', developer);
-        const urlRemove = 'https://localhost:7245/api/Developers/' + developer.developerId;
-        axios.delete(urlRemove).then(setOperationResult('Succesfully removed')).catch(err => {setOperationResult('Error: ' + err)});
-        console.log(developer)
+    const RemoveRow = (vitamin) => {
+        console.log('RemoveRow', vitamin);
+        const urlRemove = 'https://localhost:7245/api/Vitamins/' + vitamin.vitaminid;
+        axios.delete(urlRemove).then(setOperationResult('Succesfully removed')).catch(err => { setOperationResult('Error: ' + err) });
+        console.log(vitamin)
         selectDeveloper({});
         handleClose();
         setOperationResult('');
-      }
+    }
     
   return (
       <>
-          <h1>Developers</h1>
+          <h1>Vitamins</h1>
 
           <span>show: {showEdit}</span>
           <div>
@@ -78,11 +75,11 @@ const Developers = (props) => {
           <Modal show={showEdit}>
               <Modal.Dialog>
                   <Modal.Header closeButton onClick={handleClose} >
-                      <Modal.Title>{selectedDeveloper.name}</Modal.Title>
+                      <Modal.Title>{selectedVitamin.name}</Modal.Title>
                   </Modal.Header>
 
                   <Modal.Body>
-                      <AddDeveloper developer={selectedDeveloper} />
+                      <AddVitamin vitamin={selectedVitamin} />
                   </Modal.Body>
 
                   <Modal.Footer>
@@ -95,17 +92,17 @@ const Developers = (props) => {
           <Modal show={showRemove}>
               <Modal.Dialog>
                   <Modal.Header closeButton onClick={handleClose} >
-                      <Modal.Title>{selectedDeveloper.name}</Modal.Title>
+                      <Modal.Title>{selectedVitamin.title}</Modal.Title>
                   </Modal.Header>
 
                   <Modal.Body>
-                      <span>Do you really want to remove <strong>{selectedDeveloper.name}</strong>?</span>
+                      <span>Do you really want to remove <strong>{selectedVitamin.title}</strong>?</span>
                   </Modal.Body>
 
                   <Modal.Footer>
                       <Button onClick={handleClose} variant="secondary">Cancel</Button>
                       <Button variant="primary" onClick={ () => {
-                                    RemoveRow(selectedDeveloper)
+                                    RemoveRow(selectedVitamin)
                          }
                       }>Remove</Button>
                       <br />
@@ -119,27 +116,32 @@ const Developers = (props) => {
                   <table className="table table-striped">
                       <thead>
                           <tr>
+                              <td>#</td>
                               <td>Title</td>
-                              <td>Action</td>
+                              <td>Edit</td>
+                              <td>Remove</td>
                           </tr>
                       </thead>
                       <tbody>
                       
-                          {developersData.map(developer => (
-                              <tr key={developer.developerId}>
-                                  <td>{developer.developerId}</td>
+                          {vitaminsData.map(vitamin => (
+                              <tr key={vitamin.vitaminid}>
+                                  <td>{vitamin.vitaminid}</td>
                                   <td>
-                                      <a href={developer.developerId}>{developer.name}</a>
+                                  <div onClick={() => {
+                                           handleShow();
+                                           editRow(vitamin);
+                                      }}>{vitamin.title}</div>
                                       <br />
-                                      <span>Страна: {developer.country}</span></td>
+                                      <span>Страна: {vitamin.rastvor}</span></td>
                                   <td>
                                       <div onClick={() => {
                                            handleShow();
-                                           editRow(developer);
+                                           editRow(vitamin);
                                       }}>edit</div></td>
                                   <td>
                                       <div onClick={() => {
-                                           confirmRemoveRow(developer);
+                                           confirmRemoveRow(vitamin);
                                       }}>remove</div></td>
                               </tr>
                           ))}
@@ -156,4 +158,4 @@ const Developers = (props) => {
   )
 }
 
-export default Developers
+export default Vitamins
