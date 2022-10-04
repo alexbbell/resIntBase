@@ -12,6 +12,7 @@ const Developers = (props) => {
     const [developersData, setDevelopersData] = useState([]);
     const[showEdit, setShowEdit] = useState(0);
     const[showRemove, setShowRemove] = useState(0);
+    
     const [selectedDeveloper, selectDeveloper] = useState({});
     const [operationResult, setOperationResult] = useState(null);
 
@@ -63,6 +64,8 @@ const Developers = (props) => {
         selectDeveloper({});
         handleClose();
         setOperationResult('');
+        setShowRemove(0);
+
       }
     
   return (

@@ -1,258 +1,334 @@
 import React, {Component, useState, useTransition, Suspense, useEffect } from "react";
-
-import { fetchDevelopers, fetchVitamins, fetchKinds, fetchAges}  from '../fakeApi'
-import { useForm } from "react-hook-form";
+import {  fetchKinds, fetchAges, mainUrl}  from '../fakeApi'
 import axios from "axios";
+import { Form,  FormGroup, Label, Input, Button } from 'react-bootstrap'
+import VitaminCtrl from './VitaminsCtrl.js';
 
-//import { sendRequest } from './litedbApi';
-const host =   'https://localhost:7245/api/Premixes/';
+import { ErrorTag } from '../Helpers/Helpers.js';
+
+const host =   mainUrl + '/api/Premixes/';
 
 const Preform = (props) => {
 
 
-    //const defaultPremix = (props.premix) ? props.premix : {}
-    const { register, handleSubmit, formState: { errors } } = useForm();
-    const [premixSourceData, setPremixData] = useState( []);
-    const vitamins = fetchVitamins(); //get vitamins data 
     const kinds = fetchKinds(); // получение возможных видов
     const ages = fetchAges(); //возрастные категории
-    const developers = fetchDevelopers();
-    const [checkboxes, setCheckboxes] = useState([...new Array(vitamins.length)].map(() => false) );
+    //const developers = fetchDevelopers();
+    //const [checkboxes, setCheckboxes] = useState([...new Array(vitamins.length)].map(() => false) );
 
     const [premixFormData, setPremixFormData] = useState( {});
-    const [vitaminsSelected, setVitaminData] = useState( []);
     const [mode, setMode] = useState('new'); // mode. value == 'new' - new form, value == 'edit' - edit existing record
+    const [vitaminsSelected, setVitaminData] = useState([]);
+    
+    const [developers, setDevelopers] = useState([]);
+    const [errorFillVid, setErrorFillVid] = useState()
+    const [errorFillAge, setErrorFillAge] = useState()
+    const [successResult, setSuccessResult] = useState();
+    const [errorResult, setErrorResult] = useState();
 
-console.log('props: ', props);
-
-if(props.premix) {
     //Getting info about selected premix 
     useEffect(() => {
- 
-        const req = host + props.premix.id;
-    
-        let mounted = true;
-        const loadData = async () => {
-            const result = await axios.get(req);
-            if (mounted) {
-                var js = result.data;
-                console.log('js', js);
-                setPremixFormData({ 'title': js.title, 'vid': js.vid, 'tu' : js.tu, 'vitamins': js.vitamins });
-                fillVitamins(js.vitamins);
-                //checkboxesRenderCtrl(fillVitamins(js.vitamins))
-                setMode('edit');
-            }
-        };
-        loadData();
+        console.log('props: ', props);
 
+        if (props.premix) {
+
+            let req = host + props.premix.id;
+
+            let mounted = true;
+            const loadData = async () => {
+                if (props.premix.id !== undefined) {
+                    const result = await axios.get(req);
+                    if (mounted) {
+                        const js = result.data;
+                        console.log('js', js);
+                        setMode('edit');
+
+                        setPremixFormData(
+                            {
+                                'premixId': js.premixId,
+                                'title': js.title,
+                                'vid': js.vid,
+                                'tu': js.tu,
+                                'vitamins': js.vitamins,
+                                'age': js.age,
+                                'developer': js.developerName,
+                                'developerId': js.developerId
+                            }
+                        );
+                    }
+                }
+
+            };
+            loadData();
+            return () => {
+                mounted = false;
+            }
+        }
+        }, [mode]);
+
+//Loading developers
+    useEffect( () => {
+        let mounted = true;
+        const fetchData = async () => {
+          const result = await axios( mainUrl + '/api/Developers');
+          console.log('95', result)
+
+          if (mounted) {
+            setDevelopers(result.data);
+          }
+        }
+        fetchData();
         return () => {
             mounted = false;
         }
     }, []);
-}
-    const fillVitamins = (vits) => {
-        let vitaminsInProduct = [];
-        vitamins.map( (element) => {
-            const isChecked  = (vits.find(x=>x == element.title) ) ? true : false; 
-            const newVit = {
-                'id': element.id,
-                'title': element.title,
-                'isChecked': isChecked
-            }
-            vitaminsInProduct.push(newVit);
-        });
 
-        setVitaminData(vitaminsInProduct);
-        return vitaminsInProduct;
+
+    const  changeVit = () => {
+        //console.log('changeVit');
+        //console.log('vitaminsSelectedPrem169', vitaminsSelected);
     }
 
-    
-    const toggleChecked = (el, index) => {
-
-        vitaminsSelected.filter(x=>x.title === el.title).forEach(element => {
-            element.isChecked = !element.isChecked;
-        });
-        setVitaminData(vitaminsSelected);
-
-    } 
 
 
-    const RenderVitaminBlock = () => {
-        console.log('vitaminsSelected', vitaminsSelected);
-        return(
-            <div>
-            {vitaminsSelected.map((element, index) => {
-                let isChecked = element.isChecked;
-                return (
-                    <div key={index}>
-                        <input type="checkbox" 
-                        name="vitamins" {...register('vitamins')} 
-                        defaultChecked={element.isChecked}
-                        value={element.title}
-                        onChange={() => toggleChecked(element, index)}
-
-                        /><br />{element.title} {element.isChecked}</div>
-                    )
-            })
+    const formCheck = () => {
+        let err = 0;
+        setErrorFillVid(null);
+        setErrorFillAge(null);
+        //Check the form
+        if (typeof premixFormData.vid === 'undefined') {
+            err++;
+            setErrorFillVid('Не заполнено поле Вид');
         }
-            </div>
-        )
-            
+
+        if (typeof premixFormData.age === 'undefined') {
+            err++;
+            setErrorFillAge('Не заполнено поле Age');
+        }
+
+        return err;
+    }
+
+    const submitData = (data) =>  {
         
-    }
+        data.preventDefault();
 
-
-
-    const handleRegistration = (data) =>  {
-        console.log('data: ', JSON.stringify(data));
-        axios.post(host, data)
-        .then(response => {
-            console.log(response)
+        var vits = [];
+        vitaminsSelected.forEach(el => {
+            if(el.isChecked == true) {
+                vits.push({
+                    "vitaminId": el.vitaminId
+                 })
+            }
         })
-        .catch(error => {
-            console.log(error.response)
-        });
-    }
-    //const checkboxesCtrl = checkboxesRenderCtrl(premixFormData);
-    console.log('premixFormData', premixFormData);
-    const registerOptions = {
-        name: {required : "Name is required" },
-        kind: {required: 'Выберите вид'},
-        tu: {},
-        checkboxes : {required: 'Выбрать'}
 
+        let err = formCheck();
+  
+        //setErrorFillForm
+
+        if (err == 0) {
+
+            var data2Submit = {
+                'premixId':  (premixFormData.premixId)  ? premixFormData.premixId : 0,
+                'vid' : premixFormData.vid,
+                'age' : premixFormData.age,
+                'tu' : premixFormData.tu,
+                'developerId' : premixFormData.developerId,
+                'developerName' : '',
+                'vitamins' : vits,
+                'title': premixFormData.title
+           }
+            console.log('data2Submit', data2Submit)
+            if (premixFormData.premixId) {
+                axios.put(host + premixFormData.premixId + '?premixId=' + premixFormData.premixId, data2Submit)
+                    .then(response => {
+                        console.log(response);
+                        setSuccessResult("Updated successfully");
+                    })
+                    .catch(error => {
+                        console.log(error.response);
+                        setErrorResult(error.response);
+                    });
+
+            }
+            else {
+                axios.post(host, data2Submit)
+                    .then(response => {
+                        console.log(response);
+                        setSuccessResult("Added successfully");
+
+
+                    })
+                    .catch(error => {
+                        console.log(error.response);
+                        setErrorResult(error.response);
+                    });
+            }
+        }
+        else {
+            console.log('Illegall form fill')
+        }
     }
+
+
     if(!premixFormData) {
         return (
-            <div>Loading</div>
+            <div></div>
         )
     }
     else  {
     return (
-        <form onSubmit={handleSubmit(handleRegistration)}>
-  
+        <Form onSubmit={submitData}>
+
             <div className="row">
-                <div className="col-lg-1 offset-3">
-                    <label htmlFor="name">Name</label>
-                </div>
-                <div className="col-lg-3">
-                    <input type="text" name="name" {...register('name', registerOptions.name)}
-                        value={premixFormData.title || ''}
-                        onChange={(e) => setPremixFormData({
+                <h1>{mode}</h1>
+            </div>
+            <div className="row">
+
+                <div className="col-12  offset-1">
+                    
+                <Form.Label>Premix title</Form.Label>
+                <Form.Control id="title"  placeholder="Enter title here"  
+                onChange={(e) => setPremixFormData({
                             ...premixFormData,
                             title: e.target.value
-                        })}
-                    />
-                    <label>{errors?.name && errors.name.message}</label>
-                    <label></label>
+                        })} 
+                        defaultValue={premixFormData.title}/>
+                <Form.Text>Без пробелов, латиница и цифры</Form.Text>
+
+              
+                
                 </div>
             </div>
+
+
+
+
+
             <div className="row">
-                <div className="col-lg-1 offset-3">
-                    <label htmlFor="tu">ТУ</label>
-                    </div>
-                <div className="col-lg-3">
-                    <input type="text" name="tu" {...register('tu', registerOptions.tu)} 
-                       value={premixFormData.tu || ''}
-                        onChange={ (e) => setPremixFormData( {
+
+                <div className="col-lg-10 offset-1">
+                <Form.Label>TU</Form.Label>
+                <Form.Control id="tu"  placeholder="Enter tu"  
+                onChange={(e) => setPremixFormData({
                             ...premixFormData,
                             tu: e.target.value
-                        } )}
+                        })} 
+                        defaultValue={premixFormData.tu}/>
+                <Form.Text>Без пробелов, латиница и цифры</Form.Text>
                     
-                    />
-                    <label>{errors?.kind && errors.kind.message}</label>
                 </div>
             </div>
 
             <div className="row">
-                <div className="col-lg-1 offset-3">
-                    <label htmlFor="kind">Вид</label>
-                    </div>
-                <div className="col-lg-3">
-                    <select name="vid" {...register('kind', registerOptions.kind)}  defaultValue={premixFormData.vid} 
-                    onChange={
-                        (e) => setPremixFormData( {
-                            ...premixFormData,
-                            kind: e.target.value
-                        })
-                    }>
-                    
+
+                <div className="col-lg-10 offset-1">
+
+                <Form.Label>Vid</Form.Label>
+                    <Form.Select id="vid" aria-label="Choose vid"
+                        onChange={(e) => {
+                            if (e.target.value != 'none') {
+                                setPremixFormData({
+                                    ...premixFormData,
+                                    vid: e.target.value
+                                }
+                                );
+                            }
+                        }
+                        }
+                        value={premixFormData.vid}  >
+                             <option key='none' value='none'>Choose value</option>
                     {                        
-                        kinds.map(el => (
+                        kinds.map(el => (                            
                             <option key={el.value} value={el.value}>{el.label}</option>
                     ))}
-                    </select>
-                    <label>{errors?.kind && errors.kind.message}</label>
+                </Form.Select>
+                <Form.Text>Без пробелов, латиница и цифры</Form.Text>
+                <ErrorTag msg={ errorFillVid}></ErrorTag>
+
                 </div>
             </div>
 
 
             <div className="row">
-                <div className="col-lg-1 offset-3">
-                    <label htmlFor="kind">Возрастная категория</label>
-                    </div>
-                <div className="col-lg-3">
-                    <select name="age" {...register('age', registerOptions.kind)}  defaultValue={premixFormData.age} 
-                    onChange={
-                        (e) => setPremixFormData( {
+
+<div className="col-lg-5 offset-1">
+    { ((premixFormData.vitamins && mode == 'edit') ) ? <VitaminCtrl vits={premixFormData.vitamins}  setArrFunc={setVitaminData} onChange={ changeVit()}  /> : <div>...Loading</div>  }
+    { mode == 'new'  ?  <VitaminCtrl vits={[]} setArrFunc={setVitaminData} onChange={ changeVit()}  /> : ''  }
+    
+</div>
+
+</div>
+
+            <div className="row">
+
+                <div className="col-lg-10 offset-1">
+                <Form.Label>Age</Form.Label>
+                <Form.Select id="age"  aria-label="Choose age"  
+                onChange={(e) => 
+                    {
+                        if (e.target.value != 'none') {
+                        setPremixFormData({
                             ...premixFormData,
                             age: e.target.value
-                        })
-                    }>
-                    <option >Выберите значение</option>
+                        })}
+                        }
+                    } 
+                        value={premixFormData.age}>
+                        <option key='none' value='none'>Choose Age</option>
                     {                        
                         ages.map(el => (
                             <option key={el.value} value={el.value}>{el.label}</option>
                     ))}
-                    </select>
-                    <label>{errors?.kind && errors.kind.message}</label>
+                </Form.Select>
+                <ErrorTag msg={ errorFillVid}></ErrorTag>
+
                 </div>
             </div>
 
 
             <div className="row">
-                <div className="col-lg-1 offset-3">
-                    <label htmlFor="kind">Производитель</label>
-                    </div>
-                <div className="col-lg-3">
-                    <select name="developer" {...register('developer', registerOptions.kind)}  defaultValue={premixFormData.developer} 
-                    onChange={
-                        (e) => setPremixFormData( {
+
+                <div className="col-lg-10 offset-1">
+
+
+                <Form.Label>developer</Form.Label>
+                <Form.Select id="developer"  aria-label="Choose developer" 
+                defaultValue={premixFormData.developerId} value={premixFormData.developerId}
+                 onChange={(e) => setPremixFormData({
                             ...premixFormData,
-                            developer: e.target.value
-                            //developer: e.target.selectedOptions
-                        })
-                    }>
-                    <option >Выберите значение</option>
+                            developerId: e.target.value,
+                        })} >
+                            <option key={'empty_dev'} value='' >Выберите поставщика</option>
                     {                        
                         developers.map(el => (
-                            <option key={el.value} value={el.value}>{el.label}</option>
+                            <option key={el.developerId} value={el.developerId}>{el.name}</option>
                     ))}
-                    </select>
-                    <label>{errors?.kind && errors.kind.message}</label>
+                </Form.Select>
+
+                        <div>
+                        {premixFormData.developerId}</div>
+      
                 </div>
             </div>
 
-            <div className="row">
-                <div className="col-lg-1 offset-3">
-                    <label htmlFor="kind">Состав</label>
-                    </div>
-                <div className="col-lg-3 ">
-                     { RenderVitaminBlock() } 
 
-                     {/* {checkboxesRenderCtrl(premixFormData.checks)}  */}
-                    <label>{errors?.kind && errors.kind.message}</label>
+            <div className="row">
+                <div className="col-lg-10">
+                    {successResult}
+                    <br />
+                    {errorResult}
                 </div>
             </div>
 
             <div className="row">
                 <div className="col-lg-3 offset-3">
-                <button onClick={handleSubmit(handleRegistration)} className="btn btn-primary">Save</button>
+                <button className="btn btn-primary">Save</button>
                 </div>
             </div>
                 {/* more input fields... */}
                 
-        </form>
+        </Form>
     );
   };
 }

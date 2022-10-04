@@ -3,50 +3,60 @@ import React, {Component, useEffect, useState} from 'react'
 import { Form, FormGroup, Label, Input, Button } from 'react-bootstrap'
 
 const AddVitamin = (props) => {
-console.log(props);
     const mainUrl = 'https://localhost:7245/api/Vitamins/';
     
-    const [vitaminTitle, setVitaminTitle ] = useState('');
-    const [vitaminid, setVitaminId ] = useState(0);
-    const [vitRastvor, setVitRastvor ] = useState('');
+    const [vitaminTitle, setVitaminTitle ] = useState(null);
+    const [vitaminId, setVitaminId ] = useState(null);
+    const [vitRastvor, setVitRastvor ] = useState(null);
     const [operationResult, setOperationResult] = useState(null);
     const [mode, setMode] = useState('new'); // mode. value == 'new' - new form, value == 'edit' - edit existing record
 
-    if(props.vitamin) {
 
-        const host = mainUrl + props.vitamin.vitaminid;
-        console.log('props true', props);
-        useEffect(() => {
-            let mounted = true;
-            const fetchData = async () => {
+
+    useEffect(() => {
+        console.log('effect rinnung');
+        let mounted = true;
+        const fetchData = async () => {
+            if (typeof props.vitamin.vitaminId !== undefined) {
+                const host = mainUrl + props.vitamin.vitaminId;
                 const result = await axios(host);
                 if (mounted) {
                     setVitaminTitle(result.data.title);
-                    setVitaminId(result.data.vitaminid);
+                    setVitaminId(result.data.vitaminId);
                     setVitRastvor(result.data.rastvor);
                     setMode('edit');
                 }
             }
-            fetchData();
-            return () => {
-                mounted = false;
+            else {
+                setMode('new');
             }
-        }, [mode]);
-    }
-    else {
-        console.log('props falase', props);
-    }
+        };
+        fetchData();
+        return () => {
+            mounted = false;
+        }
+    }, []);
     
 
 
 
     const submitData = (event) => {
         event.preventDefault();
-        const vitamin = {
-            title : vitaminTitle,
-            vitaminid : vitaminid,
-            rastvor: vitRastvor
+        let  vitamin = {};
+        if (vitaminId === null) {
+            vitamin = {
+                vitaminTitle: vitaminTitle,
+                rastvor: vitRastvor
+            }
         }
+        else {
+            vitamin = {
+                vitaminTitle: vitaminTitle,
+                vitaminId: vitaminId,
+                rastvor: vitRastvor
+            }
+        }
+
         console.log(vitamin);
 
         if(mode == 'new') {
@@ -55,10 +65,10 @@ console.log(props);
             .catch( (err) => console.log('Error on adding' , err));
         }
         else {
-            const url = mainUrl + vitamin.vitaminid;
+            const url = mainUrl + vitamin.vitaminId;
             axios.put(url, vitamin)
                 .then(setOperationResult('Vitamin is updated'))
-            .catch( (err) => console.log('Error on updating' , err));
+                .catch( (err) => console.log('Error on updating' , err));
         }
     }
 
@@ -74,12 +84,12 @@ console.log(props);
           <Form onSubmit={submitData}>
               <FormGroup>
 
-              <Form.Label>Vitamin ID</Form.Label>: <Form.Label>{vitaminid}</Form.Label> <br />
+              <Form.Label>Vitamin ID</Form.Label>: <Form.Label>{vitaminId}</Form.Label> <br />
               <Form.Label>Vitamin Title</Form.Label>
-              <Form.Control id="vitaminTitle" placeholder="Enter vitamin Title" onChange={vitTitleChanged} value={vitaminTitle} />
+              <Form.Control id="vitaminTitle" placeholder="Enter vitamin Title" onChange={vitTitleChanged} defaultValue={vitaminTitle} />
 
                 <Form.Label>Type</Form.Label>
-                <Form.Control id="vitRastvor" placeholder="Enter rastvor name" onChange={vitRastvorChanged} value={vitRastvor} />
+                <Form.Control id="vitRastvor" placeholder="Enter rastvor name" onChange={vitRastvorChanged} defaultValue={vitRastvor} />
                 <Form.Text>раствор или минеральный</Form.Text>
 
               </FormGroup>

@@ -47,17 +47,17 @@ const Vitamins = (props) => {
         handleShow();
       }
 
-      const confirmRemoveRow = (developer) => {
-        selectVitamin(developer);
+      const confirmRemoveRow = (vitamin) => {
+        selectVitamin(vitamin);
         setShowRemove(1);
       }
 
     const RemoveRow = (vitamin) => {
         console.log('RemoveRow', vitamin);
-        const urlRemove = 'https://localhost:7245/api/Vitamins/' + vitamin.vitaminid;
+        const urlRemove = 'https://localhost:7245/api/Vitamins/' + vitamin.vitaminId;
         axios.delete(urlRemove).then(setOperationResult('Succesfully removed')).catch(err => { setOperationResult('Error: ' + err) });
         console.log(vitamin)
-        selectDeveloper({});
+        selectVitamin({});
         handleClose();
         setOperationResult('');
     }
@@ -125,8 +125,8 @@ const Vitamins = (props) => {
                       <tbody>
                       
                           {vitaminsData.map(vitamin => (
-                              <tr key={vitamin.vitaminid}>
-                                  <td>{vitamin.vitaminid}</td>
+                              <tr key={vitamin.vitaminId}>
+                                  <td>{vitamin.vitaminId}</td>
                                   <td>
                                   <div onClick={() => {
                                            handleShow();

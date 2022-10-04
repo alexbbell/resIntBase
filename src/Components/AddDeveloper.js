@@ -13,6 +13,8 @@ const AddDeveloper = (props) => {
     const [operationResult, setOperationResult] = useState(null);
     const [mode, setMode] = useState('new'); // mode. value == 'new' - new form, value == 'edit' - edit existing record
 
+
+
     if(props.developer) {
 
         const host = mainUrl + props.developer.developerId;
@@ -47,10 +49,9 @@ const AddDeveloper = (props) => {
         event.preventDefault();
         const developer = {
             name : devname,
-            developerId : developerId,
             country: devcountry
         }
-        console.log(developer);
+        console.log('saend dev', developer);
 
         if(mode == 'new') {
             axios.post('https://localhost:7245/api/Developers', developer)
@@ -58,7 +59,7 @@ const AddDeveloper = (props) => {
             .catch( (err) => console.log('Error on adding' , err));
         }
         else {
-            const url = mainUrl + developer.developerId;
+            const url = mainUrl + developerId;
             axios.put(url, developer)
                 .then(setOperationResult('Developer is updated'))
             .catch( (err) => console.log('Error on updating' , err));

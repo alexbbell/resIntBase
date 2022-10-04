@@ -1,5 +1,6 @@
 import React, {Component, useState, useTransition, Suspense, useEffect } from "react";
 
+export const mainUrl = 'https://localhost:7245';
 
 const myArray = [
     { name: 'Alekesey', birthdate: '15.01.1980', position: 'Chief' },
@@ -23,19 +24,19 @@ const premixData = [
     { title: 'VMP8-1', vid: 'Витаминно-минеральный', sostav: 'D3, йод', age : 'ДРВ', developer: 'Terezia', buyer: '', dstill: ''}
 ]	
 const developers = [
-    {value: 'terezia', label : 'Terezia'},
-    {value: 'resurs', label: 'Ресурс'}, 
-    {value: 'codbeck',  label: 'Cod Beck'}
+    {id: 1, value: 'Terezia'},
+    {id: 2, value: 'Ресурс'}, 
+    {id: 3, value: 'Cod Beck'}
 ]
 const  vitamins = [
-    { id: 1, title: 'A', rastvor: '' },
-    { id: 2, title: 'B', rastvor: '' },
-    { id: 3, title: 'C', rastvor: '' },
-    { id: 4, title: 'D3', rastvor: '' },
-    { id: 5, title: 'B6', rastvor: '' },
-    { id: 6, title: 'инулин', rastvor: '' },
-    { id: 7, title: 'кальций', rastvor: '' },
-    { id: 8, title: 'йод', rastvor: '' }   
+    { vitaminId: 1, vitaminTitle: 'A', rastvor: '' },
+    { vitaminId: 2, vitaminTitle: 'B', rastvor: '' },
+    { vitaminId: 3, vitaminTitle: 'C', rastvor: '' },
+    { vitaminId: 4, vitaminTitle: 'D3', rastvor: '' },
+    { vitaminId: 5, vitaminTitle: 'B6', rastvor: '' },
+    { vitaminId: 6, vitaminTitle: 'инулин', rastvor: '' },
+    { vitaminId: 7, vitaminTitle: 'кальций', rastvor: '' },
+    { vitaminId: 8, vitaminTitle: 'йод', rastvor: '' }   
 ]
 
 const kinds = [ 

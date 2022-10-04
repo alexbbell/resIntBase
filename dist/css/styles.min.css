@@ -3,8 +3,23 @@ body {
   color: "black"; }
 
 .checkboxfloat {
-  flex-direction: row;
-  width: 60px;
+  float: left;
+  width: 100px;
   height: 60px;
   text-align: center;
+  border: #000 1px solid;
+  border-radius: 2px;
+  padding: 1px;
+  margin: 1px; }
+
+.vita {
   border: #000 1px solid; }
+
+.errmsg {
+  color: #F00; }
+
+.boxed {
+  float: left;
+  width: 30px;
+  height: 30px;
+  border: #DDD 1px solid; }
